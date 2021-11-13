@@ -1,0 +1,72 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-parcelize'
+    id 'maven-publish'
+}
+
+def localGradle = new Properties()
+localGradle.load(new FileInputStream(rootProject.file("local.properties")))
+
+android {
+    compileSdk 30
+
+    defaultConfig {
+        minSdk 21
+        versionCode 1
+        versionName localGradle['maven.version']
+
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+    afterEvaluate {
+        task sourceJar(type: Jar) {
+            from android.sourceSets.main.java.srcDirs
+            classifier "sources"
+        }
+
+        publishing {
+            publications {
+                release(MavenPublication) {
+                    groupId localGradle['maven.group']
+                    artifactId localGradle['maven.artifact']
+                    version localGradle['maven.version']
+                    artifact(sourceJar)
+                    artifact("$buildDir/outputs/aar/permex-release.aar")
+                }
+            }
+
+            repositories {
+                maven {
+                    name = localGradle['maven.name']
+                    url = localGradle['maven.url']
+                    credentials {
+                        username = localGradle['maven.token']
+                        password = ""
+                    }
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+
+    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation "org.mockito.kotlin:mockito-kotlin:4.0.0"
+}

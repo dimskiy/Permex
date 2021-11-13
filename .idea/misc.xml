@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="../../../Android/Sdk/platforms/android-30/data/res/layout/activity_list_item.xml" value="0.3374094202898551" />
+        <entry key="app/src/main/res/layout/activity_main.xml" value="0.5" />
+        <entry key="permex/src/main/res/layout/layout_activity_check.xml" value="0.171875" />
+        <entry key="permissionsmanager/src/main/res/drawable/ic_24_warning.xml" value="0.35185185185185186" />
+        <entry key="permissionsmanager/src/main/res/layout/layout_bottom_explanation.xml" value="0.35280797101449274" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
+</project>
