@@ -8,7 +8,8 @@ class RequestingStateImplTest {
 
     @Test
     fun `initial state`() {
-        val state = RequestingStateImpl(listOf(PermExRequest("test1")))
+        val state = RequestingStateImpl()
+        state.addNewRequests(arrayOf(PermExRequest("test1")))
 
         assertEquals(
             mapOf(PermExRequest("test1") to PermissionStatus.UNKNOWN),
@@ -16,13 +17,14 @@ class RequestingStateImplTest {
         )
         assertEquals(
             emptyMap<String, Boolean>(),
-            state.getPermissionsResults()
+            state.getPermissionsResultsAndClear()
         )
     }
 
     @Test
     fun `state WHEN permission became DENIED`() {
-        val state = RequestingStateImpl(listOf(PermExRequest("test1")))
+        val state = RequestingStateImpl()
+        state.addNewRequests(arrayOf(PermExRequest("test1")))
 
         state.updateRequestsPending(
             mapOf(
@@ -36,13 +38,14 @@ class RequestingStateImplTest {
         )
         assertEquals(
             emptyMap<String, Boolean>(),
-            state.getPermissionsResults()
+            state.getPermissionsResultsAndClear()
         )
     }
 
     @Test
     fun `state WHEN permission became DENIED_NEED_RATIONALE`() {
-        val state = RequestingStateImpl(listOf(PermExRequest("test1")))
+        val state = RequestingStateImpl()
+        state.addNewRequests(arrayOf(PermExRequest("test1")))
 
         state.updateRequestsPending(
             mapOf(
@@ -56,13 +59,14 @@ class RequestingStateImplTest {
         )
         assertEquals(
             emptyMap<String, Boolean>(),
-            state.getPermissionsResults()
+            state.getPermissionsResultsAndClear()
         )
     }
 
     @Test
     fun `state WHEN permission became DENIED_RATIONALE_SHOWN`() {
-        val state = RequestingStateImpl(listOf(PermExRequest("test1")))
+        val state = RequestingStateImpl()
+        state.addNewRequests(arrayOf(PermExRequest("test1")))
 
         state.updateRequestsPending(
             mapOf(
@@ -76,13 +80,14 @@ class RequestingStateImplTest {
         )
         assertEquals(
             emptyMap<String, Boolean>(),
-            state.getPermissionsResults()
+            state.getPermissionsResultsAndClear()
         )
     }
 
     @Test
     fun `state WHEN permission became DENIED_PERMANENT`() {
-        val state = RequestingStateImpl(listOf(PermExRequest("test1")))
+        val state = RequestingStateImpl()
+        state.addNewRequests(arrayOf(PermExRequest("test1")))
 
         state.updateRequestsPending(
             mapOf(
@@ -96,13 +101,14 @@ class RequestingStateImplTest {
         )
         assertEquals(
             mapOf("test1" to false),
-            state.getPermissionsResults()
+            state.getPermissionsResultsAndClear()
         )
     }
 
     @Test
     fun `state WHEN permission became GRANTED`() {
-        val state = RequestingStateImpl(listOf(PermExRequest("test1")))
+        val state = RequestingStateImpl()
+        state.addNewRequests(arrayOf(PermExRequest("test1")))
 
         state.updateRequestsPending(
             mapOf(
@@ -116,7 +122,7 @@ class RequestingStateImplTest {
         )
         assertEquals(
             mapOf("test1" to true),
-            state.getPermissionsResults()
+            state.getPermissionsResultsAndClear()
         )
     }
 }

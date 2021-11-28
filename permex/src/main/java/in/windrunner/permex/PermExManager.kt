@@ -62,7 +62,7 @@ interface PermExManager {
         ): PermExManager = PermExManagerImpl(
             context = context.applicationContext,
             explanationDelegate = explanationDelegate,
-            permissionsChecker = CheckActivity::checkAndRequestPermissions
+            onStartChecking = CheckActivity::checkAndRequestPermissions
         )
     }
 }

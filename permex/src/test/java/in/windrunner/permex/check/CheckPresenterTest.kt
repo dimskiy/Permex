@@ -14,7 +14,7 @@ class CheckPresenterTest {
 
     private lateinit var presenter: CheckPresenter
     private val resultsHolder = mock<ResultsHolder>()
-    private val requestingState = RequestingStateImpl(emptyList())
+    private val requestingState = RequestingStateImpl()
     private val view = mock<CheckView>()
 
     @Before
@@ -37,7 +37,7 @@ class CheckPresenterTest {
                 "test1" to true,
                 "test2" to true
             ),
-            requestingState.getPermissionsResults()
+            requestingState.getPermissionsResultsAndClear()
         )
         verify(resultsHolder).onRequestingCompleted()
     }
@@ -67,7 +67,7 @@ class CheckPresenterTest {
                 "test1" to true,
                 "test2" to true
             ),
-            requestingState.getPermissionsResults()
+            requestingState.getPermissionsResultsAndClear()
         )
         verify(resultsHolder).onRequestingCompleted()
     }
@@ -90,7 +90,7 @@ class CheckPresenterTest {
             mapOf(
                 permissionDenied.nameRequested to false
             ),
-            requestingState.getPermissionsResults()
+            requestingState.getPermissionsResultsAndClear()
         )
 
         verify(resultsHolder).onRequestingCompleted()

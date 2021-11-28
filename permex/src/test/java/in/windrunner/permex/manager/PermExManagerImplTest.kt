@@ -6,6 +6,7 @@ import android.content.Context
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -18,7 +19,7 @@ class PermExManagerImplTest {
     private val context = mock<Context>()
     private val resultsCallback = mock<(Map<String, Boolean>) -> Unit>()
     private val explanationDelegate = mock<PermExExplanationDelegate>()
-    private val permissionsChecker = mock<(Context) -> Unit>()
+    private val startChecking = mock<(Context) -> Unit>()
 
     @Before
     fun setup() {
@@ -29,8 +30,9 @@ class PermExManagerImplTest {
         manager = PermExManagerImpl(
             context = contextProxy,
             explanationDelegate = explanationDelegate,
-            permissionsChecker = permissionsChecker
+            onStartChecking = startChecking
         )
+        manager.setResultsListener(resultsCallback)
     }
 
     @Test
@@ -44,14 +46,13 @@ class PermExManagerImplTest {
 
         manager.requestPermissions(request)
 
-        verify(permissionsChecker).invoke(context)
+        verify(startChecking).invoke(context)
     }
 
     @Test
     fun `report requesting completed WHEN no permissions processed`() {
         with(manager){
             requestPermissions(PermExRequest("test"))
-            setResultsListener(resultsCallback)
             onRequestingCompleted()
         }
 
@@ -65,7 +66,7 @@ class PermExManagerImplTest {
         manager.requestPermissions(request)
         manager.onUserConfirmed(request)
 
-        verify(permissionsChecker, times(2)).invoke(context)
+        verify(startChecking, times(2)).invoke(context)
     }
 
     @Test
@@ -75,6 +76,35 @@ class PermExManagerImplTest {
         manager.requestPermissions(request)
         manager.onUserDeclined(request)
 
-        verify(permissionsChecker, times(2)).invoke(context)
+        verify(startChecking, times(2)).invoke(context)
+    }
+
+    @Test
+    fun `combined result WHEN multiple request calls`() {
+        val request1 = PermExRequest("test1")
+        val request2 = PermExRequest("test2")
+
+        with(manager) {
+            requestPermissions(request1)
+            requestingState.updateRequestsResult(
+                mapOf(request1.nameRequested to true)
+            )
+            onRequestingCompleted()
+
+            requestPermissions(request2)
+            requestingState.updateRequestsResult(
+                mapOf(request2.nameRequested to true)
+            )
+            onRequestingCompleted()
+        }
+
+        inOrder(resultsCallback) {
+            verify(resultsCallback).invoke(
+                mapOf(request1.nameRequested to true)
+            )
+            verify(resultsCallback).invoke(
+                mapOf(request2.nameRequested to true)
+            )
+        }
     }
 }

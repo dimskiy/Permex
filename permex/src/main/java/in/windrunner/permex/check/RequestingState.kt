@@ -4,14 +4,16 @@ import `in`.windrunner.permex.PermExRequest
 
 internal interface RequestingState {
 
-    fun updateRequestsPending(newStatuses: Map<PermExRequest, PermissionStatus>)
+    fun addNewRequests(requests: Array<out PermExRequest>)
 
     fun updateRequestsResult(newStatuses: Map<String, Boolean>)
+
+    fun updateRequestsPending(newStatuses: Map<PermExRequest, PermissionStatus>)
 
     fun updateRequestPending(request: PermExRequest, status: PermissionStatus)
 
     fun getRequestsPending(): Map<PermExRequest, PermissionStatus>
 
-    fun getPermissionsResults(): Map<String, Boolean>
+    fun getPermissionsResultsAndClear(): Map<String, Boolean>
 
 }

@@ -10,11 +10,12 @@ import `in`.windrunner.permex.check.RequestingStateImpl
 import `in`.windrunner.permex.check.ResultsHolder
 import `in`.windrunner.permex.tools.ServiceLocator
 import android.content.Context
+import androidx.annotation.VisibleForTesting
 
 internal class PermExManagerImpl(
     context: Context,
     private val explanationDelegate: PermExExplanationDelegate,
-    private val permissionsChecker: (Context) -> Unit
+    private val onStartChecking: (Context) -> Unit
 ) : ResultsHolder(), PermExManager, PermExExplanationDelegate.DecisionHolder {
 
     init {
@@ -23,12 +24,15 @@ internal class PermExManagerImpl(
 
     private val appContext: Context = context.applicationContext
 
+    @Volatile
     private var resultsListener: (Map<String, Boolean>) -> Unit = {}
-    private lateinit var requestingState: RequestingState
-    private lateinit var checkingPresenter: CheckPresenter
+
+    @VisibleForTesting
+    val requestingState: RequestingState by lazy { RequestingStateImpl() }
+    private val checkingPresenter: CheckPresenter by lazy { CheckPresenter(this, requestingState) }
 
     override fun onRequestingCompleted() {
-        resultsListener(requestingState.getPermissionsResults())
+        resultsListener(requestingState.getPermissionsResultsAndClear())
     }
 
     override fun onUserConfirmed(request: PermExRequest) {
@@ -48,7 +52,7 @@ internal class PermExManagerImpl(
     }
 
     private fun resumePermissionsRequesting() {
-        permissionsChecker(appContext)
+        onStartChecking(appContext)
     }
 
     override fun setResultsListener(resultsListener: (Map<String, Boolean>) -> Unit): PermExManager {
@@ -57,14 +61,8 @@ internal class PermExManagerImpl(
     }
 
     override fun requestPermissions(vararg permissions: PermExRequest) {
-        requestingState = RequestingStateImpl(permissions.toList())
-        checkingPresenter = CheckPresenter(this, requestingState)
-
-        ServiceLocator.initLocator(
-            checkPresenter = checkingPresenter,
-            explanationDelegate = explanationDelegate
-        )
-        
-        permissionsChecker(appContext)
+        requestingState.addNewRequests(permissions)
+        ServiceLocator.initLocator(checkingPresenter, explanationDelegate)
+        onStartChecking(appContext)
     }
 }

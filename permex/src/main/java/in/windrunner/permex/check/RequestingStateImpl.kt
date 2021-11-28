@@ -5,14 +5,20 @@ import `in`.windrunner.permex.check.PermissionStatus.DENIED_PERMANENT
 import `in`.windrunner.permex.check.PermissionStatus.GRANTED
 import `in`.windrunner.permex.check.PermissionStatus.UNKNOWN
 
-internal class RequestingStateImpl(requestsPending: Collection<PermExRequest>) : RequestingState {
+internal class RequestingStateImpl : RequestingState {
 
-    private var requestsPending: MutableMap<PermExRequest, PermissionStatus> =
-        requestsPending
-            .associateWith { UNKNOWN }
-            .toMutableMap()
+    private var requestsPending = mutableMapOf<PermExRequest, PermissionStatus>()
 
     private val permissionsResult: MutableMap<String, Boolean> = mutableMapOf()
+
+    override fun addNewRequests(requests: Array<out PermExRequest>) {
+        synchronized(requestsPending) {
+            requests
+                .filterNot { requestsPending.containsKey(it) }
+                .associateWith { UNKNOWN }
+                .let(requestsPending::putAll)
+        }
+    }
 
     override fun updateRequestsPending(newStatuses: Map<PermExRequest, PermissionStatus>) {
         newStatuses.forEach { (request, status) -> updateRequestPending(request, status) }
@@ -41,6 +47,10 @@ internal class RequestingStateImpl(requestsPending: Collection<PermExRequest>) :
 
     override fun getRequestsPending(): Map<PermExRequest, PermissionStatus> = requestsPending
 
-    override fun getPermissionsResults(): Map<String, Boolean> = permissionsResult
+    override fun getPermissionsResultsAndClear(): Map<String, Boolean> {
+        val result = HashMap(permissionsResult)
+        permissionsResult.clear()
 
+        return result
+    }
 }

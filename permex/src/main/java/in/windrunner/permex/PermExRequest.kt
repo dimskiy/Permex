@@ -19,4 +19,4 @@ import kotlinx.parcelize.Parcelize
 data class PermExRequest(
     val nameRequested: String,
     val forceShowExplanation: Boolean = false
-) : Parcelable
+): Parcelable

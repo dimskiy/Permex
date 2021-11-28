@@ -6,7 +6,7 @@ Allows to offload [Android permissions](https://developer.android.com/training/p
 There only thing you still need to do is creating rationale dialog to show extra explanation to the user.
 
 ## Quick start:
-1. Add to project' builddependencies {dependencies {dependencies {.gradle:
+1. Add to project' build dependencies:
 ```
 allprojects {
     repositories {
@@ -19,10 +19,15 @@ allprojects {
 2. Add to app module' build.gradle:
 ```
 dependencies {
-    implementation 'in.windrunner.permex:permex:0.6'
+    implementation "in.windrunner.permex:permex:$version"
+    implementation "in.windrunner.permex:permex-rx:$version" //RxJava support
 }
 ```
 3. Implement *PermExExplanationDelegate* allowing your app to receive rationale dialog requests and report user's decision
-4. Create *PermExManager* instance using *PermExManager.create()* and pass *PermExExplanationDelegate* implementation created before
-5. Get the results using *PermExManager.setResultsListener()*
+4. Create *PermExManager* instance
+   (Classic way) using *PermExManager.create()* and pass *PermExExplanationDelegate* implementation created before
+   (RxJava way) using *PermExManagerRx.create()* and pass *PermExExplanationDelegate* implementation created before
+5. Get the results
+   * (Classic way) using *(PermExManager).setResultsListener()*
+   * (RxJava way) using *(PermExManagerRx).observeResults()*
 6. Request permission using *PermExManager.requestPermissions()*
