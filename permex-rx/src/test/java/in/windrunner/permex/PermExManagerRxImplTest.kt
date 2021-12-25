@@ -61,15 +61,97 @@ class PermExManagerRxImplTest {
             requestPermissions(request)
                 .test()
 
-            observeResults()
+            requestPermissions(request)
                 .test()
-                .assertNotComplete()
-                .assertValue(resultExpected)
 
             observeResults()
                 .test()
                 .assertNotComplete()
-                .assertNoValues()
+                .assertValueCount(1)
+                .assertValue(resultExpected)
         }
+    }
+
+    @Test
+    fun `get specific results`() {
+        val request1 = PermExRequest("test")
+        val request2 = PermExRequest("test2")
+
+        permissionsResultMocked(
+            mapOf(request1.nameRequested to true).plus(
+                request2.nameRequested to true
+            )
+        )
+
+        with(instance) {
+            requestPermissions(request1, request2)
+                .test()
+
+            getFullResultsFor(listOf(request1))
+                .test()
+                .assertValue(
+                    mapOf(request1.nameRequested to true)
+                )
+                .assertComplete()
+        }
+    }
+
+    @Test
+    fun `maintain other results WHEN someone get specific results`() {
+        val request1 = PermExRequest("test")
+        val request2 = PermExRequest("test2")
+
+        permissionsResultMocked(
+            mapOf(request1.nameRequested to true).plus(
+                request2.nameRequested to true
+            )
+        )
+
+        with(instance) {
+            requestPermissions(request1, request2)
+                .test()
+
+            getFullResultsFor(listOf(request1))
+                .test()
+                .assertValue(
+                    mapOf(request1.nameRequested to true)
+                )
+                .assertComplete()
+
+            observeResults()
+                .test()
+                .assertNotComplete()
+                .assertValue(
+                    mapOf(
+                        request1.nameRequested to true,
+                        request2.nameRequested to true
+                    )
+                )
+        }
+    }
+
+    @Test
+    fun `get specific results WHEN split onto parts`() {
+        val request1 = PermExRequest("test")
+        val request2 = PermExRequest("test2")
+
+        val captor = argumentCaptor<(Map<String, Boolean>) -> Unit>()
+        whenever(managerWrapper.setResultsListener(captor.capture())).then {
+            captor.firstValue(mapOf(request1.nameRequested to true))
+            captor.firstValue(mapOf(request2.nameRequested to true))
+        }
+
+        instance.requestPermissions(request1, request2)
+            .test()
+
+        instance.getFullResultsFor(listOf(request1, request2))
+            .test()
+            .assertValue(
+                mapOf(
+                    request1.nameRequested to true,
+                    request2.nameRequested to true
+                )
+            )
+            .assertComplete()
     }
 }
