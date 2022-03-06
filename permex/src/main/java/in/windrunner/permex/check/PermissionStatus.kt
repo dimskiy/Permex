@@ -6,5 +6,6 @@ internal enum class PermissionStatus {
     DENIED,
     DENIED_NEED_RATIONALE,
     DENIED_RATIONALE_SHOWN,
+    DENIED_USER_CONFIRMED,
     DENIED_PERMANENT
 }

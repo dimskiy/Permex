@@ -40,7 +40,13 @@ internal class CheckPresenter(
             .firstNotNullOfOrNull { (request, state) ->
                 if (state == PermissionStatus.DENIED_NEED_RATIONALE) request else null
             }
-            ?.let(view::callUserConfirmation)
+            ?.let { request ->
+                requestingState.updateRequestPending(
+                    request = request,
+                    status = PermissionStatus.DENIED_RATIONALE_SHOWN
+                )
+                view.callUserConfirmation(request)
+            }
             ?: callPermissionsPendingApprove()
     }
 

@@ -52,8 +52,8 @@ internal class CheckActivity : AppCompatActivity(), CheckView {
     }
 
     override fun onDestroy() {
+        presenter.onDetach(this)
         super.onDestroy()
-        presenter.onDetach()
     }
 
     companion object {

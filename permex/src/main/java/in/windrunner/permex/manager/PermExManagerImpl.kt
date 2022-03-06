@@ -3,11 +3,7 @@ package `in`.windrunner.permex.manager
 import `in`.windrunner.permex.PermExExplanationDelegate
 import `in`.windrunner.permex.PermExManager
 import `in`.windrunner.permex.PermExRequest
-import `in`.windrunner.permex.check.CheckPresenter
-import `in`.windrunner.permex.check.PermissionStatus
-import `in`.windrunner.permex.check.RequestingState
-import `in`.windrunner.permex.check.RequestingStateImpl
-import `in`.windrunner.permex.check.ResultsHolder
+import `in`.windrunner.permex.check.*
 import `in`.windrunner.permex.tools.ServiceLocator
 import android.content.Context
 import androidx.annotation.VisibleForTesting
@@ -38,7 +34,7 @@ internal class PermExManagerImpl(
     override fun onUserConfirmed(request: PermExRequest) {
         requestingState.updateRequestPending(
             request = request,
-            status = PermissionStatus.DENIED_RATIONALE_SHOWN
+            status = PermissionStatus.DENIED_USER_CONFIRMED
         )
         resumePermissionsRequesting()
     }

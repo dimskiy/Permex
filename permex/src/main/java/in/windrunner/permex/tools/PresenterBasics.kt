@@ -18,8 +18,10 @@ internal open class BasePresenter<T : BasePresenterView> {
     }
 
     @CallSuper
-    open fun onDetach() {
-        viewRef.clear()
+    open fun onDetach(view: T) {
+        if (viewRef.get() === view) {
+            viewRef.clear()
+        }
     }
 
 }
