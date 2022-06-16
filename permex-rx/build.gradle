@@ -25,11 +25,22 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    task sourceJar(type: Jar) {
+        from android.sourceSets.main.java.srcDirs
+        classifier "sources"
+    }
 
     afterEvaluate {
-        task sourceJar(type: Jar) {
-            from android.sourceSets.main.java.srcDirs
-            classifier "sources"
+        publishing {
+            publications {
+                release(MavenPublication) {
+                    from components.release
+                    groupId = 'com.github.dimskiy'
+                    artifactId = 'Permex-rx'
+                    version = '0.81'
+                    artifact(sourceJar)
+                }
+            }
         }
     }
 }
